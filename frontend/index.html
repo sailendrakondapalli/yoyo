@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>YouTube to MP4 Downloader</title>
+</head>
+<body>
+  <h1>YouTube Video Downloader</h1>
+  
+  <input type="text" id="urlInput" placeholder="Paste YouTube URL here" size="60" />
+  <button onclick="downloadVideo()">Download</button>
+  <button onclick="seeLatestVideo()">See Latest Video</button>
+  
+  <p id="status"></p>
+  <a id="downloadLink" style="display:none;" target="_blank">View/Download Video</a>
+
+  <script>
+    async function downloadVideo() {
+      const url = document.getElementById('urlInput').value;
+      const status = document.getElementById('status');
+      const downloadLink = document.getElementById('downloadLink');
+
+      status.innerText = 'Downloading...';
+      downloadLink.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/download', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+
+        const data = await res.json();
+
+        if (data.filename) {
+          downloadLink.href = `/videos/${data.filename}`;
+          downloadLink.innerText = 'View/Download Video';
+          downloadLink.style.display = 'inline';
+          status.innerText = 'Video is ready!';
+        } else {
+          status.innerText = data.error || 'Error during download.';
+        }
+      } catch (err) {
+        console.error(err);
+        status.innerText = 'Request failed.';
+      }
+    }
+
+    async function seeLatestVideo() {
+      const status = document.getElementById('status');
+      const downloadLink = document.getElementById('downloadLink');
+
+      status.innerText = 'Fetching latest video...';
+      downloadLink.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/latest');
+        const data = await res.json();
+
+        if (data.filename) {
+          downloadLink.href = `/videos/${data.filename}`;
+          // http://localhost:5000
+          downloadLink.innerText = 'View/Download Latest Video';
+          downloadLink.style.display = 'inline';
+          status.innerText = 'Latest video found!';
+        } else {
+          status.innerText = data.error || 'No videos found.';
+        }
+      } catch (err) {
+        console.error(err);
+        status.innerText = 'Failed to fetch latest video.';
+      }
+    }
+  </script>
+</body>
+</html>
+
+
