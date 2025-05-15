@@ -1,9 +1,13 @@
 {
   "name": "youtube-downloader",
   "version": "1.0.0",
+  "license": "MIT",
   "scripts": {
     "start": "node index.js",
     "postinstall": "curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o yt-dlp && chmod +x yt-dlp"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "dependencies": {
     "cors": "^2.8.5",
